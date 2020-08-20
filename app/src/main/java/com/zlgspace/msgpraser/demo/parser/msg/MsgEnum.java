@@ -2,20 +2,18 @@ package com.zlgspace.msgpraser.demo.parser.msg;
 
 
 import com.zlgspace.msgpraser.annotation.BindEntity;
-import com.zlgspace.msgpraser.annotation.CallbackInterface;
-import com.zlgspace.msgpraser.annotation.None;
+import com.zlgspace.msgpraser.annotation.MessageDescription;
 import com.zlgspace.msgpraser.demo.parser.bean.ABean;
 import com.zlgspace.msgpraser.demo.parser.bean.BBean;
 import com.zlgspace.msgpraser.demo.parser.bean.CBean;
 import com.zlgspace.msgpraser.demo.parser.bean.DBean;
 import com.zlgspace.msgpraser.demo.parser.bean.EBean;
-import com.zlgspace.msgpraser.demo.parser.bean.FBean;
 
 /**
  * 消息描述类，这里是一个枚举
  * 这个类主要是描述消息与实体类的关系，目前一个消息只能对应一个实体类
  */
-@CallbackInterface
+@MessageDescription
 public enum MsgEnum {
     @BindEntity(ABean.class) A,
     @BindEntity(BBean.class) B,

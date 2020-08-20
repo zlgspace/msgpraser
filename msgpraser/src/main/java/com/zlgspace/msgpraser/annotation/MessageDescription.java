@@ -5,9 +5,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
-public @interface CallbackMethod {
-    String value() default "";
-    boolean intercept() default false;
+@Target(ElementType.TYPE)
+public @interface MessageDescription {
+//String value() default "";
 }
