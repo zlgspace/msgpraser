@@ -18,8 +18,10 @@ import java.util.concurrent.Executors;
 public class MsgParser {
 
     private static IMsgParserAdapter mMsgParserAdapter;
-    private static final Map<Class<?>, Constructor<? extends MsgTargetBroker>> BINDINGS = new LinkedHashMap<>();
-    private static final Map<Class<?>, MsgTargetBroker> BIND_INSTANCES = new LinkedHashMap<>();
+//    private static final Map<Class<?>, Constructor<? extends MsgTargetBroker>> BINDINGS = new LinkedHashMap<>();
+//    private static final Map<Class<?>, MsgTargetBroker> BIND_INSTANCES = new LinkedHashMap<>();
+    private static final Map<String, Constructor<? extends MsgTargetBroker>> BINDINGS = new LinkedHashMap<>();
+    private static final Map<String, MsgTargetBroker> BIND_INSTANCES = new LinkedHashMap<>();
     private static MsgDispatcher mMsgDispatcher = new MsgDispatcher();
     private static ExecutorService executorService = Executors.newSingleThreadExecutor();
 
@@ -30,9 +32,10 @@ public class MsgParser {
 
     public static void register(Object object){
         if(object==null)return;
-        if(BIND_INSTANCES.containsKey(object.getClass()))
+        String key = findKeyByObj(object);
+        if(BIND_INSTANCES.containsKey(key))
             return;
-        Constructor<? extends MsgTargetBroker> constructor = findBindingConstructorForClass(object.getClass());
+        Constructor<? extends MsgTargetBroker> constructor = findBindingConstructorForClass(object);
         MsgTargetBroker msgTargetBroker = null;
         try {
             msgTargetBroker = constructor.newInstance(object);
@@ -45,7 +48,7 @@ public class MsgParser {
         }
         if(msgTargetBroker==null)
             return;
-        BIND_INSTANCES.put(object.getClass(),msgTargetBroker);
+        BIND_INSTANCES.put(key,msgTargetBroker);
         mMsgDispatcher.bind(msgTargetBroker);
     }
 
@@ -75,9 +78,11 @@ public class MsgParser {
     }
 
 
-    private static Constructor<? extends MsgTargetBroker> findBindingConstructorForClass(Class<?> cls) {
-        Constructor<? extends MsgTargetBroker> bindingCtor = BINDINGS.get(cls);
-        if (bindingCtor != null || BINDINGS.containsKey(cls)) {
+    private static Constructor<? extends MsgTargetBroker> findBindingConstructorForClass(Object obj) {
+        Class cls = obj.getClass();
+        String key = findKeyByObj(obj);
+        Constructor<? extends MsgTargetBroker> bindingCtor = BINDINGS.get(key);
+        if (bindingCtor != null || BINDINGS.containsKey(key)) {
             return bindingCtor;
         }
         String clsName = cls.getName();
@@ -94,9 +99,13 @@ public class MsgParser {
         } catch (NoSuchMethodException e) {
             throw new RuntimeException("Unable to find binding constructor for " + clsName, e);
         }
-        BINDINGS.put(cls, bindingCtor);
+        BINDINGS.put(key, bindingCtor);
         return bindingCtor;
     }
 
 
+    private static String findKeyByObj(Object object){
+        String key = object.getClass().getName()+"_"+object.hashCode();
+        return key;
+    }
 }

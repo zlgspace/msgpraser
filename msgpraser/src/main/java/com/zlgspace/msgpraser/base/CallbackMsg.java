@@ -1,8 +1,8 @@
 package com.zlgspace.msgpraser.base;
 
-public class CallbackMsg {
+public class CallbackMsg<M> {
     private String mMsgHead;
-    private String mMsgBody;
+    private M mMsgBody;
 
     public String getMsgHead() {
         return mMsgHead;
@@ -12,11 +12,11 @@ public class CallbackMsg {
         this.mMsgHead = msgHead;
     }
 
-    public String getMsgBody() {
+    public M getMsgBody() {
         return mMsgBody;
     }
 
-    public void setMsgBody(String msgBody) {
+    public void setMsgBody(M msgBody) {
         this.mMsgBody = msgBody;
     }
 

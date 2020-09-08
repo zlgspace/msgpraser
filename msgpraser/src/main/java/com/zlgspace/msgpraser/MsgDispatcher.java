@@ -53,7 +53,7 @@ class MsgDispatcher{
 
     public void dispatch( CallbackMsg cbkMsg, IMsgParserAdapter adapter){
         String msgHead = cbkMsg.getMsgHead();
-        String msgBody = cbkMsg.getMsgBody();
+        Object msgBody = cbkMsg.getMsgBody();
         synchronized (lock) {
             ArrayList<MsgTargetBroker> list = bindMsgTargetMap.get(msgHead);
             if (list == null || list.isEmpty())
@@ -62,7 +62,7 @@ class MsgDispatcher{
             if(msgIdD==null)
                 return;
             Object rspObj = null;
-            if(msgBody!=null&&msgBody.length()>0)
+            if(msgBody!=null)
                 rspObj = adapter.parser(msgBody, msgIdD.getBindEntity());
 
             final Object rspTempObj = rspObj;
