@@ -1,12 +1,8 @@
-package com.zlgspace.msgpraser;
+package com.zlgspace.msgpraser.annotation;
 
 
 import com.google.auto.service.AutoService;
 import com.zlgspace.apt.base.BuildClass;
-import com.zlgspace.apt.base.IAPTProcessor;
-import com.zlgspace.msgpraser.annotation.BindEntity;
-import com.zlgspace.msgpraser.annotation.CallbackMethod;
-import com.zlgspace.msgpraser.annotation.MessageDescription;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -35,7 +31,6 @@ import javax.lang.model.util.Elements;
 import javax.tools.JavaFileObject;
 
 
-//public class MessageParserProcessor implements IAPTProcessor {
 @AutoService(Processor.class)
 public class MessageParserProcessor extends AbstractProcessor {
 
@@ -49,10 +44,10 @@ public class MessageParserProcessor extends AbstractProcessor {
 
     private  HashMap<String,ArrayList<String>> msgIdsArray = new HashMap<>();
 
-//    @Override
-//    public SourceVersion getSupportedSourceVersion() {
-//        return super.getSupportedSourceVersion();
-//    }
+    @Override
+    public SourceVersion getSupportedSourceVersion() {
+        return super.getSupportedSourceVersion();
+    }
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -77,7 +72,7 @@ public class MessageParserProcessor extends AbstractProcessor {
         }
 
         Set<? extends Element> callbackMethod = roundEnvironment.getElementsAnnotatedWith(CallbackMethod.class);
-        HashMap<String ,BuildClass> clzMap = new HashMap<>();
+        HashMap<String , BuildClass> clzMap = new HashMap<>();
         for(Element e:callbackMethod){
             mkMsgTargetBroker(e,clzMap);
         }

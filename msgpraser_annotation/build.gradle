@@ -3,7 +3,6 @@ apply plugin: 'com.novoda.bintray-release'
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    api project(':msgpraser_annotation')
 }
 
 sourceCompatibility = "8"
@@ -11,7 +10,7 @@ targetCompatibility = "8"
 
 
 publish {
-    artifactId = 'msgpraser'
+    artifactId = 'msgpraser-annotation'
     userOrg = rootProject.userOrg //bintray.com用户名
     groupId = rootProject.groupId //jcenter上的路径
     publishVersion = rootProject.publishVersion //版本号

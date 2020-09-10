@@ -1,0 +1,1 @@
+include ':app', ':msgpraser', ':msgpraser_compiler', ':msgpraser_annotation'
