@@ -36,6 +36,8 @@ public class MsgParser {
         if(BIND_INSTANCES.containsKey(key))
             return;
         Constructor<? extends MsgTargetBroker> constructor = findBindingConstructorForClass(object);
+        if(constructor == null)
+            return;
         MsgTargetBroker msgTargetBroker = null;
         try {
             msgTargetBroker = constructor.newInstance(object);
@@ -92,6 +94,8 @@ public class MsgParser {
         }
         try {
             Class<?> bindingClass = cls.getClassLoader().loadClass(clsName + "_CbBroker");
+            if(bindingClass==null)
+                return null;
             //noinspection unchecked
             bindingCtor = (Constructor<? extends MsgTargetBroker>) bindingClass.getConstructor(cls);
         } catch (ClassNotFoundException e) {
