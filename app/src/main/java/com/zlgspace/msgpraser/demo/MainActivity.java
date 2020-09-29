@@ -41,12 +41,12 @@ public class MainActivity extends BaseActivity {
     }
 
     //必须要通过@CallbackMethod注解标记函数，才能被正确回调，这里是以函数名称为消息号进行回调的示例
-    @CallbackMethod
+    @CallbackMethod(intercept = true)
     public void A(ABean a) {
         Log.d(TAG,"rcv A msg");
     }
-
-    //这里是对回调函数绑定了消息号，进行回调示例
+//
+//    //这里是对回调函数绑定了消息号，进行回调示例
     @CallbackMethod("B")
     public void confStart(){
         Log.d(TAG,"rcv B msg");

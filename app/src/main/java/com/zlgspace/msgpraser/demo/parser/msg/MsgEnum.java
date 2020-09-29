@@ -13,7 +13,7 @@ import com.zlgspace.msgpraser.demo.parser.bean.EBean;
  * 消息描述类，这里是一个枚举
  * 这个类主要是描述消息与实体类的关系，目前一个消息只能对应一个实体类
  */
-@MessageDescription
+//@MessageDescription
 public enum MsgEnum {
     @BindEntity(ABean.class) A,
     @BindEntity(BBean.class) B,

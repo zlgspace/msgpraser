@@ -42,7 +42,7 @@ public class MessageParserProcessor extends AbstractProcessor {
 
     private  HashMap<String,String> mtbSwitchMap = new HashMap<>();
 
-    private  HashMap<String,ArrayList<String>> msgIdsArray = new HashMap<>();
+    private  HashMap<String,ArrayList<MsgIdHandler>> msgIdsArray = new HashMap<>();
 
     @Override
     public SourceVersion getSupportedSourceVersion() {
@@ -89,7 +89,7 @@ public class MessageParserProcessor extends AbstractProcessor {
             bc.appendMethod("return intercept;\n");
             bc.appendMethod("}\n");
 
-            ArrayList<String> msgIds = msgIdsArray.get(bc.getName());
+            ArrayList<MsgIdHandler> msgIds = msgIdsArray.get(bc.getName());
             String targetName = bc.getName().split("_")[0];
 
             bc.appendMethod("public "+bc.getName()+"("+targetName+" target){\n");
@@ -99,12 +99,20 @@ public class MessageParserProcessor extends AbstractProcessor {
             }else {
                 bc.appendMethod("rcvMsgIds = new MsgIdDescription["+msgIds.size()+"];\n");
                 for (int i = 0; i < msgIds.size(); i++) {
-                    MsgIdHandler handler = msgMap.get(msgIds.get(i));
-                    bc.appendMethod("MsgIdDescription mid"+i+" = new MsgIdDescription();\n");
-                    bc.appendMethod("mid"+i+".setMsgId(\""+handler.msgId+"\");\n");
-                    bc.appendMethod("mid"+i+".setHasParams("+handler.hasParams()+");\n");
-                    if(handler.hasParams())
-                        bc.appendMethod("mid"+i+".setBindEntity("+handler.msgParams.get(0)+".class);\n");
+                    MsgIdHandler handler = msgMap.get(msgIds.get(i).msgId);
+                    bc.appendMethod("MsgIdDescription mid" + i + " = new MsgIdDescription();\n");
+                    if(handler!=null) {
+                        bc.appendMethod("mid" + i + ".setMsgId(\"" + handler.msgId + "\");\n");
+                        bc.appendMethod("mid" + i + ".setHasParams(" + handler.hasParams() + ");\n");
+                        if(handler.hasParams())
+                            bc.appendMethod("mid"+i+".setBindEntity("+handler.msgParams.get(0)+".class);\n");
+                    }else{
+                        bc.appendMethod("mid" + i + ".setMsgId(\"" + msgIds.get(i).msgId + "\");\n");
+                        bc.appendMethod("mid" + i + ".setHasParams(" + msgIds.get(i).hasParams() + ");\n");
+                        if(msgIds.get(i).hasParams())
+                            bc.appendMethod("mid"+i+".setBindEntity("+msgIds.get(i).msgParams.get(0)+".class);\n");
+                    }
+
                     bc.appendMethod("rcvMsgIds["+i+"] = mid"+i+";\n");
                 }
             }
@@ -288,13 +296,18 @@ public class MessageParserProcessor extends AbstractProcessor {
             msgIdsArray.put(clzSimpleName+"_CbBroker",new ArrayList<>());
         }
 
-        msgIdsArray.get(clzSimpleName+"_CbBroker").add(msgId);
+        List<? extends VariableElement> parameters =  element.getParameters();
 
+        MsgIdHandler msgIdHandler = new MsgIdHandler(msgId);
+        if(parameters!=null&&!parameters.isEmpty()) {
+            for (int i = 0; i < parameters.size(); i++) {
+                msgIdHandler.msgParams.add(parameters.get(i).asType().toString());
+            }
+        }
+        msgIdsArray.get(clzSimpleName+"_CbBroker").add(msgIdHandler);
         mtbSwitch = mtbSwitchMap.get(clzSimpleName+"_CbBroker");
         mtbSwitch = mtbSwitch+"case \""+msgId+"\":\n";
 
-
-        List<? extends VariableElement> parameters =  element.getParameters();
 
         BuildClass buildClass = null;
         if(!clzMap.containsKey(clzSimpleName+"_CbBroker")) {
@@ -323,6 +336,12 @@ public class MessageParserProcessor extends AbstractProcessor {
                     params = params+",";
                 params = params+handler.msgParams.get(i)+" o"+i;
             }
+        }else{
+            for(int i = 0;i< msgIdHandler.msgParams.size();i++){
+                if(i!=0)
+                    params = params+",";
+                params = params+ msgIdHandler.msgParams.get(i)+" o"+i;
+            }
         }
 
         buildClass.appendMethod("public boolean " + msgId + "("+params+"){\n");
@@ -341,10 +360,14 @@ public class MessageParserProcessor extends AbstractProcessor {
         buildClass.appendMethod("return "+cbm.intercept()+";\n");
         buildClass.appendMethod("}\n");
 
-        if(params!=null&&!params.isEmpty())
-            mtbSwitch = mtbSwitch+"intercept = "+msgId+"(("+handler.msgParams.get(0)+")body);\n";
-        else
-            mtbSwitch = mtbSwitch+msgId+"();\n";
+        if(params!=null&&!params.isEmpty()) {
+            if(handler!=null)
+                mtbSwitch = mtbSwitch + "intercept = " + msgId + "((" + handler.msgParams.get(0) + ")body);\n";
+            else
+                mtbSwitch = mtbSwitch + "intercept = " + msgId + "((" + msgIdHandler.msgParams.get(0) + ")body);\n";
+        } else {
+            mtbSwitch = mtbSwitch + "intercept = " + msgId + "();\n";
+        }
 
         mtbSwitch = mtbSwitch+"break;\n";
 
