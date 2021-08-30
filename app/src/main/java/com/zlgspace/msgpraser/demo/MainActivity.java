@@ -3,6 +3,7 @@ package com.zlgspace.msgpraser.demo;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.zlgspace.msgpraser.MsgParser;
 import com.zlgspace.msgpraser.annotation.CallbackMethod;
 import com.zlgspace.msgpraser.demo.parser.ParserManager;
 import com.zlgspace.msgpraser.demo.parser.bean.ABean;
@@ -37,6 +38,10 @@ public class MainActivity extends BaseActivity {
             ParserManager.getCallback().callback(msgB);
 //            MsgParser.sendMsg(B,null);
         });
+
+        findViewById(R.id.registerBtn).setOnClickListener(v-> MsgParser.register(this));
+
+        findViewById(R.id.unRegisterBtn).setOnClickListener(v-> MsgParser.unRegister(this));
 
     }
 

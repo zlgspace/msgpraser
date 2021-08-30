@@ -10,13 +10,18 @@ public class BaseActivity extends CallbackAdapterActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ParserManager.register(this);
+//        ParserManager.register(this);
     }
 
 
     @Override
     protected void onStop() {
         super.onStop();
-        ParserManager.unRegister(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+//        ParserManager.unRegister(this);
     }
 }

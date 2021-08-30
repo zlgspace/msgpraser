@@ -22,4 +22,18 @@
         android:text="SendB"
         />
 
+    <Button
+        android:id="@+id/registerBtn"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="register"
+        />
+
+    <Button
+        android:id="@+id/unRegisterBtn"
+        android:layout_height="wrap_content"
+        android:layout_width="wrap_content"
+        android:text="unRegister"
+        />
+
 </LinearLayout>

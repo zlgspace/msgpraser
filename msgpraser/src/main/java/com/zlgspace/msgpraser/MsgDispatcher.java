@@ -5,6 +5,8 @@ import com.zlgspace.msgpraser.base.IMsgParserAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 class MsgDispatcher{
 
@@ -48,7 +50,15 @@ class MsgDispatcher{
                     continue;
                 bindMsgTargetMap.get(id).remove(mtb);
             }
+            //清除已经为空的消息列表
+            Set<String> keySet = new HashSet<String>(bindMsgTargetMap.keySet());
+            for(String key:keySet){
+                if(bindMsgTargetMap.get(key).isEmpty()){
+                    bindMsgTargetMap.remove(key);
+                }
+            }
         }
+        System.out.println("bindMsgTargetMap size:"+bindMsgTargetMap.size());
     }
 
     public void dispatch( CallbackMsg cbkMsg, IMsgParserAdapter adapter){

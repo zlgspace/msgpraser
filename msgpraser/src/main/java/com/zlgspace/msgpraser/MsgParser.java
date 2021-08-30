@@ -15,6 +15,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import sun.rmi.runtime.Log;
+
 public class MsgParser {
 
     private static IMsgParserAdapter mMsgParserAdapter;
@@ -52,12 +54,15 @@ public class MsgParser {
             return;
         BIND_INSTANCES.put(key,msgTargetBroker);
         mMsgDispatcher.bind(msgTargetBroker);
+        System.out.println("register->BIND_INSTANCES SIZE:"+BIND_INSTANCES.size());
     }
 
     public static void unRegister(Object object){
-        if(!BIND_INSTANCES.containsKey(object.getClass()))
+        String key = findKeyByObj(object);
+        if(!BIND_INSTANCES.containsKey(key))
             return;
-        mMsgDispatcher.unbind(BIND_INSTANCES.remove(object.getClass()));
+        mMsgDispatcher.unbind(BIND_INSTANCES.remove(key));
+        System.out.println("unRegister->BIND_INSTANCES SIZE:"+BIND_INSTANCES.size());
     }
 
     public static void sendMsg(String msgId,Object msgBody){
